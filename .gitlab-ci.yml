@@ -1,0 +1,42 @@
+---
+stages:
+  - build-containers
+  - tag
+  - deploy
+
+include:
+  - project: 'connylegal/mietright_deployments'
+    file: '/.gitlab-ci/build-container.yaml'
+    ref: main
+
+  - project: 'connylegal/mietright_deployments'
+    ref: main
+    file: '/.gitlab-ci/deploy.yaml'
+
+
+variables:
+  FAILFASTCI_NAMESPACE: connylegal
+  OCI_REPO: img.conny.dev
+  CONTAINER: oss/kured-assistant
+  IMAGE_NAME: $OCI_REPO/$CONTAINER
+  APPNAME: kured-assistant
+  APP: kured-assistant
+  DEFAULT_TAG: v.$CI_COMMIT_REF_SLUG
+
+# BUILD IMAGE
+build image:
+  extends: .build-container
+  variables:
+    TAG: v.$CI_COMMIT_REF_SLUG
+
+# TAGS IMAGES
+image tag:
+  extends: .tag-main
+  variables:
+    SOURCE_TAG: v.$CI_COMMIT_REF_SLUG
+
+deploy-production:
+  needs:
+    - image tag
+  extends: .deploy-production
+  stage: deploy
