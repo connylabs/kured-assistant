@@ -28,7 +28,7 @@ def switch(node_name: str, namespace: str = ''):
     patronicmd = ["patronictl", "switchover", "--force"]
     for pod in pods:
         cluster_name = "-".join(pod["name"].split("-")[0:-1])
-        cmd = pre_command + ["-n", pod["namespace"], pod["name"], "--"] + patronicmd + [cluster_name]
+        cmd = pre_command + ["-n", pod["namespace"], pod["name"], "--"] + patronicmd + [cluster_name, f"--leader={pod['name']}"]
         print(cmd)
         print(f"Executing switch over for {pod['name']} in {pod['namespace']}")
         process = subprocess.run(cmd,
