@@ -1,4 +1,5 @@
 FROM python:alpine AS download
+ENV PYTHONUNBUFFERED=1
 RUN apk add --update-cache \
     bash \
     curl
